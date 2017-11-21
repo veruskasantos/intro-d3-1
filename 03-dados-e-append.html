@@ -18,20 +18,26 @@
 
 <!-- PARTE 1: select + append  -->
     <script type="text/javascript">
-      d3.select('.row') // .xpto == elemento da classe xpto
+    var row = d3.select('.row');
+      row // .xpto == elemento da classe xpto
       .append('p')
       .text('Sou um parágrafo recém-criado!');
+      row // .xpto == elemento da classe xpto
+      .append('p')
+      .text('Sou um segundo parágrafo recém-criado! Muito bem!');
     </script>
 
 <!-- PARTE 2: dados -->
-<!--     <script type="text/javascript">
-      var dados = [2, 3, 5, 7, 11, 13, 17];
+    <script type="text/javascript">
+      var dados = [2, 3, 5, "Pode", "Vários", "Vários", "Tipos"];
       d3.select("#pros_dados") // #xpto == elemento com id xpto
         .selectAll("p")
       .data(dados)
       .enter()
         .append("p")
-        .text("Parágrafo criado a partir dos dados.") -->
+        .text(function(d) {return "Valor lá do array: " + d;})
+        .style("color", "purple")
+        .style("font-size", "20px")
     </script>
   </body>
 </html>
