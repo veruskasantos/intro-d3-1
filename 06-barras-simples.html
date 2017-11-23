@@ -25,6 +25,11 @@
         font: 10px sans-serif;
         text-anchor: end;
       }
+
+      .mychart rect:hover {
+        background-color: grey;
+        color: black;
+      }
     </style>
 
     <script type="text/javascript">
@@ -49,14 +54,16 @@
        * (Nem pense em fazer hardcoded :)).
        */
 
+      var i = 0
+
       svg.selectAll('rect')
           .data(dados)
           .enter()
             .append('rect')
-              .attr('x', 0) // A função com dois parâmetros pode entrar aqui
-              .attr('y', 0) // e aqui
-              .attr('width', 30)
-              .attr('height', 20);
+              .attr('x', function(d){return d;}) // A função com dois parâmetros pode entrar aqui
+              .attr('y', function(){i = i + 20; return i;}) // e aqui
+              .attr('width', 200)
+              .attr('height', 10);
 
       /* Mais dicas :
        * - As barras ficam mais legíveis se não encostarem umas nas outras. Para isso
