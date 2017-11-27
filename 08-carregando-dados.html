@@ -11,7 +11,7 @@
 <body>
   <div class="container">
     <div class="row">
-      <h2>Barras com dados findos de uma url</h2>
+      <h2>Barras com dados vindos de uma url</h2>
     </div>
     <div class="row mychart" id="chart">
     </div>
@@ -19,11 +19,11 @@
 
   <style>
     .mychart rect {
-      fill: steelblue;
+      fill: purple;
     }
 
     .mychart rect:hover {
-      fill: goldenrod;
+      fill: pink;
     }
 
     .mychart text {
@@ -36,22 +36,76 @@
     "use strict"
 
     function desenhaBarras(dados) {
-      // Preencha aqui.
-    }
+     // definicoes de altura e largura do svg e da vis dentro
+      var alturaSVG = 400, larguraSVG = 900;
+      var	margin = {top: 10, right: 20, bottom:30, left: 45}, // para descolar a vis das bordas do grafico
+          larguraVis = larguraSVG - margin.left - margin.right,
+          alturaVis = alturaSVG - margin.top - margin.bottom;
 
-    d3.tsv('dados/alphabet.tsv', function(dados) {
-      console.log("provavelmente acontece depois")
-      desenhaBarras(dados);
+      /*
+       * Prepara onde adicionaremos a visualizacao
+       */
+      var grafico = d3.select('#chart') // cria elemento <svg> com um <g> dentro
+        .append('svg')
+          .attr('width', larguraVis + margin.left + margin.right)
+          .attr('height', alturaVis + margin.top + margin.bottom)
+        .append('g') // para entender o <g> vá em x03-detalhes-svg.html
+          .attr('transform', 'translate(' +  margin.left + ',' + margin.top + ')');
+
+      // === EDITE DAQUI ===
+      /*
+       * As escalas
+       */
+       
+      var maxAltura = d3.max(dados, (d, i) => d.VolumePercentual) + 10;
+       
+      var x = d3.scaleBand()
+                .domain(dados.map(function(d) { return d.DataInformacao.substring(6,10); }))
+                .range([0,larguraVis])
+                .padding(.3);
+
+      var y = d3.scaleLinear()
+                .domain([0, maxAltura])
+                .range([alturaVis,0]);
+
+      // === ATÉ DAQUI ===
+
+      /*
+       * As marcas
+       */
+      
+      grafico.selectAll('g')
+              .data(dados)
+              .enter()
+                .append('rect')
+                  .attr('x', d => x(d.DataInformacao.substring(6,10)))   // usando a escala definida acima
+                  .attr('width', x.bandwidth()) // largura da barra via escala
+                  .attr('y', d => y(d.VolumePercentual))
+                  .attr('height', (d) => alturaVis - y(d.VolumePercentual)); // de cabeca para baixo
+
+      /*
+       * Os eixos
+       */
+      grafico.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + alturaVis + ")")
+              .call(d3.axisBottom(x)); // magica do d3: gera eixo a partir da escala
+
+      grafico.append('g')
+              .attr('transform', 'translate(0,0)')
+              .call(d3.axisLeft(y))  // gera eixo a partir da escala
+
+      grafico.append("text")
+        .attr("transform", "translate(-30," + (alturaVis + margin.top)/2 + ") rotate(-90)")
+        .text("Volume (%)");
+    }
+    
+    var dadosURL = "https://api.insa.gov.br/reservatorios/12172/monitoramento";
+    
+    d3.json(dadosURL, function(dados) {
+      desenhaBarras(dados.volumes);
     });
 
-    console.log("provavelmente acontece primeiro") // me apague quando entender.
-
-    /*
-    * Assim como a função d3.tsv, existe a d3.csv e a d3.json
-    * Em todas, o primeiro parâmetro é uma URL e o segundo a função que
-    * será executada quando o dado for obtido.
-    * >>>>> A chamada ao d3.tsv é assíncrona <<<<<<
-    */
   </script>
 </body>
 
