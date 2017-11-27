@@ -81,9 +81,9 @@
        var max = d3.max(dados, (d, i) => d.valor) + 10;
        
       var x = d3.scaleBand()
-                .domain([0,dados.length])
+                .domain(dados.map(function(d) { return d.letra; }))
                 .range([0,larguraVis])
-                .padding(.7);
+                .padding(.3);
 
       var y = d3.scaleLinear()
                 .domain([0, max])
