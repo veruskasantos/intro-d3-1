@@ -11,7 +11,7 @@
 <body>
   <div class="container">
     <div class="row">
-      <h2>Barras com dados vindos de uma url</h2>
+      <h2>Volume máximo e mínimo do Açude Epitácio Pessoa, por mês</h2>
     </div>
     <div class="row mychart" id="chart">
     </div>
@@ -19,11 +19,11 @@
 
   <style>
     .mychart circle {
-      fill: brown;
+      fill: yellow;
     }
 
     .mychart circle:hover {
-      fill: grey;
+      fill: lemonchiffon;
     }
 
     .mychart text {
@@ -37,8 +37,8 @@
 
     function desenhaGrafico(dados) {
      // definicoes de altura e largura do svg e da vis dentro
-      var alturaSVG = 400, larguraSVG = 900;
-      var	margin = {top: 10, right: 20, bottom:30, left: 45}, // para descolar a vis das bordas do grafico
+      var alturaSVG = 600, larguraSVG = 2000;
+      var	margin = {top: 10, right: 20, bottom:30, left: 100}, // para descolar a vis das bordas do grafico
           larguraVis = larguraSVG - margin.left - margin.right,
           alturaVis = alturaSVG - margin.top - margin.bottom;
 
@@ -49,36 +49,45 @@
         .append('svg')
           .attr('width', larguraVis + margin.left + margin.right)
           .attr('height', alturaVis + margin.top + margin.bottom)
-        .append('g') // para entender o <g> v� em x03-detalhes-svg.html
+        .append('g') // para entender o <g> v� em x03-detalhes-svg.html
           .attr('transform', 'translate(' +  margin.left + ',' + margin.top + ')');
-          
+
       /*
        * As escalas
        */
-       
-      var maxAltura = d3.max(dados, (d, i) => d.dez_percentil) + 10;
-       
+
+      var maxAltura = d3.max(dados, (d, i) => d.noventa_percentil) + 10;
+
       var x = d3.scaleBand()
                 .domain(dados.map(function(d) { return d.mes; }))
                 .range([0,larguraVis])
-                .padding(.3);
+                .padding(.10);
 
       var y = d3.scaleLinear()
-                .domain([0, maxAltura])
+                .domain([60, maxAltura])
                 .range([alturaVis,0]);
 
       /*
        * As marcas
        */
-      
+
       grafico.selectAll('g')
               .data(dados)
               .enter()
                 .append('circle')
-                  .attr('r', 10)
+                  .attr('r', d => d.noventa_percentil)
                   .attr('cx', d => x(d.mes))
-                  .attr('cy', d => y(d.dez_percentil));
-     
+                  .attr('cy', d => y(d.noventa_percentil));
+
+     grafico.selectAll('g')
+          .data(dados)
+          .enter()
+          .append('circle')
+          .attr('r', d => d.dez_percentil)
+          .attr('cx', d => x(d.mes))
+          .attr('cy', d => y(d.noventa_percentil))
+          .style('fill', '#3393FF');
+
        /*
        * Os eixos
        */
@@ -95,9 +104,9 @@
         .attr("transform", "translate(-30," + (alturaVis + margin.top)/2 + ") rotate(-90)")
         .text("Volume (%)");
     }
-    
+
     var dados = "dados/boqueirao-por-mes.json";
-    
+
     d3.json(dados, function(dados) {
       desenhaGrafico(dados);
     });
