@@ -57,10 +57,10 @@
        * As escalas
        */
 
-      var maxAltura = d3.max(dados, (d, i) => d.valor);
+      var maxAltura = d3.max(dados, (d, i) => d.VolumePercentual) + 10;
 
       var x = d3.scaleBand()
-                .domain(dados.map(function(d) { return d.letra; }))
+                .domain(dados.map(function(d) { return d.DataInformacao.substring(6,10); }))
                 .range([0,larguraVis])
                 .padding(.3);
 
@@ -78,10 +78,10 @@
               .data(dados)
               .enter()
                 .append('rect')
-                  .attr('x', d => x(d.letra))   // usando a escala definida acima
+                  .attr('x', d => x(d.DataInformacao.substring(6,10)))   // usando a escala definida acima
                   .attr('width', x.bandwidth()) // largura da barra via escala
-                  .attr('y', d => y(d.valor))
-                  .attr('height', (d) => alturaVis - y(d.valor)); // de cabeca para baixo
+                  .attr('y', d => y(d.VolumePercentual))
+                  .attr('height', (d) => alturaVis - y(d.VolumePercentual)); // de cabeca para baixo
 
       /*
        * Os eixos
@@ -97,13 +97,13 @@
 
       grafico.append("text")
         .attr("transform", "translate(-30," + (alturaVis + margin.top)/2 + ") rotate(-90)")
-        .text("Valor");
+        .text("Volume (%)");
     }
 
-    var dados = 'dados/alphabet.tsv';
+    var dadosURL = "https://api.insa.gov.br/reservatorios/12172/monitoramento";
 
-    d3.tsv(dados, function(dados) {
-      desenhaBarras(dados);
+    d3.json(dadosURL, function(dados) {
+      desenhaBarras(dados.volumes);
     });
 
   </script>
